@@ -1,22 +1,24 @@
 package main
 
 import (
-    "fmt"
-    "log"
-    "net/http"
-    "os"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
 )
 
 func main() {
-    os.MkdirAll("logs", os.ModePerm)
+	// logsフォルダ作成
+	_ = os.MkdirAll("logs", 0755)
 
-    InitDB()
-    InitLogger()
+	// DB初期化
+	initDB()
+	defer db.Close()
 
-    http.HandleFunc("/api/orders", OrdersHandler)
-    http.HandleFunc("/api/orders/", OrderDetailHandler)
+	// ルーティング (handler.goの関数名と一致させる)
+	http.HandleFunc("/api/orders", OrdersHandler)
+	http.HandleFunc("/api/orders/", OrderDetailHandler)
 
-    fmt.Println("サーバー起動: http://localhost:8080")
-
-    log.Fatal(http.ListenAndServe(":8080", nil))
+	fmt.Println("サーバー起動: http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
